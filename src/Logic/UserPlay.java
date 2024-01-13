@@ -110,6 +110,8 @@ public class UserPlay {
         }
 
 
+        Actions.printBoard(games.get(games.size()-1));
+        System.out.println("\n ============ GAME FINISHED ==============\n");
 
     }
 }
