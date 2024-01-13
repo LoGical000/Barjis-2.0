@@ -32,9 +32,12 @@ public class Actions {
         int playerStonesInKitchen = countPlayerStonesInKitchen(game, playerNumber);
         int opponentStonesInKitchen = countPlayerStonesInKitchen(game,opponent);
 
+        // Score based on stones on Board.
+        score += 10 * playerStonesOnBoard;
+        score -= 10 * opponentStonesOnBoard;
         // Score based on stones in the kitchen.
-        score += 10 * playerStonesInKitchen;
-        score -= 10 * opponentStonesInKitchen;
+        score += 20 * playerStonesInKitchen;
+        score -= 20 * opponentStonesInKitchen;
 
         // Score based on stones on the board (closer to kitchen is better).
         for (int i = 0; i < 4; i++) {
@@ -47,7 +50,7 @@ public class Actions {
         for (int pos : positions1){
             for (int num:X){
                 if (pos==num)
-                    score+=5;
+                    score+=50;
             }
         }
 
@@ -88,12 +91,21 @@ public class Actions {
 
     public static List<Game> allNextMoves(Game game,int steps,int playerNumber) {
         List<Game> nextMoves = new LinkedList<>();
-        for (int i = 0; i < 4; i++) {
-                Game gameCopy = MoveController.Move(game, steps, i + 1, playerNumber);
-                //System.out.println(Arrays.toString(playerCopy.getSoldiersPositions()));
-                nextMoves.add(gameCopy);
 
+        int [] positions1;
+        if(playerNumber == 1)
+            positions1  = game.getFirstStonesPositions();
+        else positions1 = game.getSecondStonesPositions();
+
+        for (int i = 0; i < 4; i++) {
+            if (MoveCheckController.checkMove(playerNumber,steps, positions1[i],game)) {
+            //Game gameCopy = new Game(game);
+            Game movedGame = MoveController.Move(game, steps, i + 1, playerNumber);
+            System.out.println(Arrays.toString(movedGame.getSecondStonesPositions()));
+            nextMoves.add(movedGame);
+            }
         }
+        System.out.println("NEXT MOVE LOOP END");
         return nextMoves;
     }
 

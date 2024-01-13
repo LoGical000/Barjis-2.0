@@ -10,26 +10,29 @@ import java.util.*;
 
 public class Expectiminimax {
 
+    static ArrayList<Game> games = new ArrayList<>();
+
     Game gameModel;
     static int turn = 0;
 
 
     public Expectiminimax(Game gameModel)
     {
+        games.add(new Game());
         this.gameModel = gameModel;
         this.play();
     }
 
     public void play() {
 
-        Actions.printBoard(gameModel);
+        Actions.printBoard(games.get(games.size()-1));
         while (true) {
             humanPlay(turn);
             turn++;
-            gameModel.refreshBoard();
-            Actions.printBoard(gameModel);
+            games.get(games.size()-1).refreshBoard();
+            Actions.printBoard(games.get(games.size()-1));
 
-            if (Actions.isFinal(gameModel)) {
+            if (Actions.isFinal(games.get(games.size()-1))) {
                 System.out.println("Human wins");
                 break;
             }
@@ -38,10 +41,10 @@ public class Expectiminimax {
             computerPlay(turn);
             turn++;
 
-            gameModel.refreshBoard();
-            Actions.printBoard(gameModel);
+            games.get(games.size()-1).refreshBoard();
+            Actions.printBoard(games.get(games.size()-1));
 
-            if (Actions.isFinal(gameModel)) {
+            if (Actions.isFinal(games.get(games.size()-1))) {
                 System.out.println("Computer wins!");
                 break;
             }
@@ -60,18 +63,19 @@ public class Expectiminimax {
 //                System.out.println(firstPlayer);
 //                System.out.println(Arrays.toString(secondPlayer.getSoldiersPositions()));
 //                System.out.println(steps);
-                Pair<Double, Game> result = MaxMove(gameModel,1,1);
+                Pair<Double, Game> result = MaxMove(games.get(games.size()-1),1,1);
 //                System.out.println(secondPlayer);
 //                System.out.println(result);
                 gameModel = result.getValue();
-                result = MaxMove(gameModel,steps,1);
+                //System.out.println(gameModel.toString());
+                result = MaxMove(games.get(games.size()-1),steps,1);
                 gameModel = result.getValue();
                 //Actions.MoveKhal(players, secondPlayer);
                 //Actions.MoveRegular(players, secondPlayer, steps);
-            } else if (MoveCheckController.checkNoSoldiers(gameModel,2)) {
+            } else if (MoveCheckController.checkNoSoldiers(games.get(games.size()-1),2)) {
                 System.out.println("\n There is no soldiers on board...\n");
             } else {
-                Pair<Double, Game> result = MaxMove(gameModel,steps,1);
+                Pair<Double, Game> result = MaxMove(games.get(games.size()-1),steps,1);
                 gameModel = result.getValue();
                 //Actions.MoveRegular(players, secondPlayer, steps);
             }
@@ -108,6 +112,7 @@ public class Expectiminimax {
             }
         }
 
+
         return new Pair<>(avgEval, bestMove);
     }
 
@@ -130,7 +135,8 @@ public class Expectiminimax {
                 bestOpponentMove = nextState;
             }
         }
-
+        if (bestOpponentMove!=null)
+            System.out.println(Arrays.toString(bestOpponentMove.getSecondStonesPositions()));
         return new Pair<>(avgEval, bestOpponentMove);
     }
 
@@ -198,16 +204,16 @@ public class Expectiminimax {
 
             //Khal logic
             if(steps == 10 || steps == 25){
-                Actions.MoveKhal(gameModel,1);
-                Actions.MoveRegular(gameModel,1,steps);
+                Actions.MoveKhal(games.get(games.size()-1),1);
+                Actions.MoveRegular(games.get(games.size()-1),1,steps);
             }
 
-            else if(MoveCheckController.checkNoSoldiers(gameModel,1)){
+            else if(MoveCheckController.checkNoSoldiers(games.get(games.size()-1),1)){
                 System.out.println("\n There is no soldiers on board...\n");
             }
 
             else{
-                Actions.MoveRegular(gameModel,1,steps);
+                Actions.MoveRegular(games.get(games.size()-1),1,steps);
             }
 
             if (steps==2 || steps==3 || steps==4 || limit==10) {
