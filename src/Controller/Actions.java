@@ -11,6 +11,81 @@ import java.util.Scanner;
 
 public class Actions {
 
+    public static double evaluate(Game game,int playerNumber) {
+        double score = 0;
+
+        int opponent = getOtherPlayerNumber(playerNumber);
+
+        int [] positions1;
+        if(playerNumber == 1)
+            positions1  = game.getFirstStonesPositions();
+        else positions1 = game.getSecondStonesPositions();
+
+        int [] positions2;
+        if(opponent == 1)
+            positions2  = game.getFirstStonesPositions();
+        else positions2 = game.getSecondStonesPositions();
+
+        // Count player and opponent stones on the board and in the kitchen.
+        int playerStonesOnBoard = countPlayerStonesOnBoard(game, playerNumber);
+        int opponentStonesOnBoard = countPlayerStonesOnBoard(game,opponent);
+        int playerStonesInKitchen = countPlayerStonesInKitchen(game, playerNumber);
+        int opponentStonesInKitchen = countPlayerStonesInKitchen(game,opponent);
+
+        // Score based on stones in the kitchen.
+        score += 10 * playerStonesInKitchen;
+        score -= 10 * opponentStonesInKitchen;
+
+        // Score based on stones on the board (closer to kitchen is better).
+        for (int i = 0; i < 4; i++) {
+            score += 2 * (positions1[i]);
+            score -= 2 * (positions2[i]);
+        }
+
+        int[] X = {11, 22, 28, 39, 45, 56, 62, 73};
+        // Bonus for stones on X positions (protected).
+        for (int pos : positions1){
+            for (int num:X){
+                if (pos==num)
+                    score+=5;
+            }
+        }
+
+        // Adjust score based on game stage (optional).
+        // Here's an example for the endgame:
+        if (playerStonesOnBoard + playerStonesInKitchen < 7) {
+            score += 3 * (playerStonesOnBoard + playerStonesInKitchen);
+        }
+
+        return score;
+    }
+
+    public static int countPlayerStonesOnBoard(Game game,int playerNumber){
+        int counter=0;
+        int [] positions;
+        if(playerNumber == 1)
+            positions  = game.getFirstStonesPositions();
+        else positions = game.getSecondStonesPositions();
+        for(int pos : positions){
+            if(pos>0 && pos<84)
+                counter++;
+        }
+        return counter;
+    }
+    public static int countPlayerStonesInKitchen(Game game,int playerNumber){
+        int counter=0;
+        int [] positions;
+        if(playerNumber == 1)
+            positions  = game.getFirstStonesPositions();
+        else positions = game.getSecondStonesPositions();
+        for(int pos : positions){
+            if(pos==84)
+                counter++;
+        }
+        return counter;
+    }
+
+
     public static List<Game> allNextMoves(Game game,int steps,int playerNumber) {
         List<Game> nextMoves = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
@@ -177,6 +252,12 @@ public class Actions {
         if (position < 42) return position + 34;
         else return position - 34;
     }
+
+    public static int getOtherPlayerNumber(int playerNumber){
+        if (playerNumber==1)
+            return 2;
+       return 1;
+}
 
 
 
