@@ -36,7 +36,6 @@ public class Expectiminimax {
 
             System.out.println("_____Computer Turn______");
             computerPlay(turn);
-            System.out.println("ANAS");
             turn++;
 
             gameModel.refreshBoard();
@@ -151,20 +150,27 @@ public class Expectiminimax {
         for (Game nextState : nextStates) {
             double eval = MaxMove(nextState,steps, depth + 1).getKey(); // Recursively call MaxMove
             avgEval += eval * getProbability(steps); // Weighted average based on probabilities
+
+            System.out.println("this is eval" + eval);
+            System.out.println("this is getp " + getProbability(steps));
+            System.out.println("this is avgeval: " + avgEval);
         }
+
 
         return new Pair<>(avgEval, null); // Return average evaluation without bestMove for chance nodes
     }
 
 
     private double getProbability(int steps) {
+        if (steps == 1)
+            steps = 10;
         int[] probabilities = {40, 369, 1385, 2765, 3111, 1860, 466};
 
         // Find the index of the shell with the matching steps value
         int index = -1;
-        List<String> keys = new ArrayList<>(Shell.createShellMap().keySet()); // Convert keySet to a List
-        for (int i = 0; i < keys.size(); i++) {
-            if (Shell.createShellMap().get(keys.get(i)) == steps) {
+        List<Integer> values = new ArrayList<>(Shell.createShellMap().values()); // Convert keySet to a List
+        for (int i = 0; i < values.size(); i++) {
+            if ((values.get(i)) == steps) {
                 index = i;
                 break;
             }
@@ -215,6 +221,7 @@ public class Expectiminimax {
         Game gameModel = new Game();
         Expectiminimax g = new Expectiminimax(gameModel);
         g.play();
+
     }
 
 }
